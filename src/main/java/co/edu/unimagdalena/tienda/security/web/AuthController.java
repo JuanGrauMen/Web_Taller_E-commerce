@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,8 +32,7 @@ public class AuthController {
         if (users.existsByEmailIgnoreCase(req.email())) {
             return ResponseEntity.badRequest().build();
         }
-        var roles = Optional.ofNullable(req.roles()).filter(r -> !r.isEmpty())
-                .orElseGet(() -> Set.of(Role.ROLE_USER));
+        var roles = Set.of(Role.ROLE_USER);
 
         var user = AppUser.builder()
                 .email(req.email())
@@ -53,7 +53,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest req) {
-        authManager.authenticate(new UsernamePasswordAuthenticationToken(req.email(), req.password()));
+        try {
+            authManager.authenticate(new UsernamePasswordAuthenticationToken(req.email(), req.password()));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(401).build();
+        }
         var user = users.findByEmailIgnoreCase(req.email()).orElseThrow();
         var principal = User.withUsername(user.getEmail())
                 .password(user.getPassword())
