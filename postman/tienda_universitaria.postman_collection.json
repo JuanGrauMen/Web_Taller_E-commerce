@@ -1,0 +1,470 @@
+{
+  "info": {
+    "_postman_id": "tienda-universitaria-v1",
+    "name": "Tienda Universitaria — API REST",
+    "description": "Colección completa de endpoints para la Tienda Universitaria de Unimagdalena.\n\n**Uso:**\n1. Importar esta colección en Postman\n2. Crear un entorno con variable `baseUrl = http://localhost:8080`\n3. Ejecutar `Auth / Login` o `Auth / Register` — el token se guarda automáticamente en `{{token}}`\n4. Todos los demás requests usan `{{token}}` en el header Authorization",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {"raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@test.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.accessToken) {",
+                  "  pm.collectionVariables.set('token', json.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {"raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@test.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.accessToken) {",
+                  "  pm.collectionVariables.set('token', json.accessToken);",
+                  "  console.log('Token guardado:', json.accessToken.substring(0, 30) + '...');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/api/v1/customers", "host": ["{{baseUrl}}"], "path": ["api", "v1", "customers"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Juan Grau\",\n  \"email\": \"juan@unimagdalena.edu.co\",\n  \"status\": \"ACTIVE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Customers",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/customers?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "customers"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Customer by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/customers/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "customers", "1"]}
+          }
+        },
+        {
+          "name": "Update Customer",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/api/v1/customers/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "customers", "1"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Juan Daniel Grau\",\n  \"status\": \"ACTIVE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Customer (ADMIN only)",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/customers/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "customers", "1"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Addresses",
+      "item": [
+        {
+          "name": "Create Address",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/api/v1/addresses", "host": ["{{baseUrl}}"], "path": ["api", "v1", "addresses"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"line1\": \"Cra 5 #10-20\",\n  \"city\": \"Santa Marta\",\n  \"department\": \"Magdalena\",\n  \"postalCode\": \"470001\",\n  \"defaultAddress\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Addresses by Customer",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/addresses/customer/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "addresses", "customer", "1"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/api/v1/categories", "host": ["{{baseUrl}}"], "path": ["api", "v1", "categories"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Libros\",\n  \"description\": \"Libros universitarios y textos de estudio\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/categories", "host": ["{{baseUrl}}"], "path": ["api", "v1", "categories"]}
+          }
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/categories/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "categories", "1"]}
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/api/v1/categories/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "categories", "1"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Libros y Material\",\n  \"description\": \"Libros, apuntes y material de estudio\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Category (ADMIN only)",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/categories/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "categories", "1"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/api/v1/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoryId\": 1,\n  \"name\": \"Cálculo Diferencial\",\n  \"sku\": \"LIB-CALC-001\",\n  \"price\": 45000,\n  \"active\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "products"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/products/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products", "1"]}
+          }
+        },
+        {
+          "name": "Get Products by Category",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/products/category/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products", "category", "1"]}
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/api/v1/products/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products", "1"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 48000,\n  \"active\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Product (ADMIN only)",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/products/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products", "1"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Inventory",
+      "item": [
+        {
+          "name": "Get Inventory by Product",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/inventories/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "inventories", "1"]}
+          }
+        },
+        {
+          "name": "Update Inventory Stock",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/api/v1/inventories/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "inventories", "1"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"availableStock\": 50,\n  \"minimumStock\": 5\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/api/v1/orders", "host": ["{{baseUrl}}"], "path": ["api", "v1", "orders"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"addressId\": 1,\n  \"items\": [\n    {\"productId\": 1, \"quantity\": 2}\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "orders"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/orders/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "orders", "1"]}
+          }
+        },
+        {
+          "name": "Pay Order",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/orders/1/pay", "host": ["{{baseUrl}}"], "path": ["api", "v1", "orders", "1", "pay"]}
+          }
+        },
+        {
+          "name": "Ship Order",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/orders/1/ship", "host": ["{{baseUrl}}"], "path": ["api", "v1", "orders", "1", "ship"]}
+          }
+        },
+        {
+          "name": "Deliver Order",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/orders/1/deliver", "host": ["{{baseUrl}}"], "path": ["api", "v1", "orders", "1", "deliver"]}
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/orders/1/cancel", "host": ["{{baseUrl}}"], "path": ["api", "v1", "orders", "1", "cancel"]}
+          }
+        },
+        {
+          "name": "Delete Order (ADMIN only)",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/orders/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "orders", "1"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Best Selling Products",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reports/best-selling-products?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reports", "best-selling-products"],
+              "query": [
+                {"key": "from", "value": null, "disabled": true, "description": "ISO-8601, ej: 2026-01-01T00:00:00Z"},
+                {"key": "to", "value": null, "disabled": true, "description": "ISO-8601, ej: 2026-12-31T23:59:59Z"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Monthly Income",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/reports/monthly-income", "host": ["{{baseUrl}}"], "path": ["api", "v1", "reports", "monthly-income"]}
+          }
+        },
+        {
+          "name": "Top Customers",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reports/top-customers?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reports", "top-customers"],
+              "query": [{"key": "limit", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Low Stock Products",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/reports/low-stock-products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "reports", "low-stock-products"]}
+          }
+        }
+      ]
+    }
+  ]
+}
