@@ -16,6 +16,27 @@ Cada rama `feature/capa-*` representa una etapa del desarrollo:
 | `feature/capa-controladores` | API REST: controladores y manejo de errores |
 | `feature/capa-front` | Frontend React + Docker para la base de datos |
 
+## Cómo ejecutar (capa-front)
+
+### Requisitos
+- Docker y Docker Compose
+- Node.js 20+
+
+### Pasos
+```bash
+# 1. Levantar la base de datos
+docker compose up -d
+
+# 2. Ejecutar el backend
+cd backend
+./mvnw spring-boot:run
+
+# 3. Ejecutar el frontend
+cd frontend
+npm install
+npm run dev
+```
+
 ## Tecnologías
 
 - **Backend:** Spring Boot 4, Java 21, PostgreSQL, Hibernate, MapStruct, Lombok
