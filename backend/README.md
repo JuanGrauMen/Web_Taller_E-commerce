@@ -1,44 +1,33 @@
-# Capa de Entidades
+# Capa de Repositorios
 
-Primera capa del proyecto: define el modelo de dominio mediante entidades JPA que representan las tablas de la base de datos.
+Segunda capa del proyecto: define el acceso a datos mediante Spring Data JPA repositories, incluyendo consultas personalizadas y especificaciones dinámicas.
 
-## Entidades
+## Repositorios
 
-| Entidad | Descripción |
-|---------|-------------|
-| `Customer` | Cliente con nombre completo, email y estado |
-| `Address` | Dirección de envío asociada a un cliente |
-| `Category` | Categoría de productos |
-| `Product` | Producto con nombre, precio, SKU y estado activo |
-| `Inventory` | Stock disponible por producto |
-| `Order` | Pedido realizado por un cliente |
-| `OrderItem` | Línea de detalle de un pedido (producto + cantidad + precio) |
-| `OrderStatusHistory` | Historial de cambios de estado de un pedido |
+| Repositorio | Características destacadas |
+|-------------|---------------------------|
+| `CustomerRepository` | Búsqueda por email (ignorando mayúsculas) |
+| `ProductRepository` | JOIN FETCH con categoría, filtro por activo y categoría |
+| `OrderRepository` | `JpaSpecificationExecutor` para filtros dinámicos |
+| `OrderItemRepository` | Consulta de productos más vendidos por rango de fechas |
+| `InventoryRepository` | Búsqueda por producto |
+| `CategoryRepository` | CRUD básico |
+| `AddressRepository` | Búsqueda por cliente |
+| `OrderStatusHistoryRepository` | Historial por orden |
 
-## Enums
+## Especificaciones (spec/)
 
-- `CustomerStatus` — ACTIVE, INACTIVE
-- `OrderStatus` — CREATED, PAID, SHIPPED, DELIVERED, CANCELLED
+`OrderSpecifications` — implementa filtros dinámicos para pedidos usando la API `Specification` de Spring Data JPA, evitando el problema de parámetros nulos en Hibernate 7.
 
 ## Tecnologías
 
-- Spring Boot 4 + Spring Data JPA
-- Hibernate (ORM)
-- PostgreSQL
-- Lombok
-
-## Cómo correr
-
-1. Tener PostgreSQL en `localhost:5432` con base de datos `tienda_db`
-2. Ajustar credenciales en `src/main/resources/application.properties`
-3. Ejecutar:
-```bash
-./mvnw spring-boot:run
-```
+- Spring Data JPA
+- JpaSpecificationExecutor
+- H2 (base de datos en memoria para tests)
 
 ## Tests
 
 ```bash
 ./mvnw test
 ```
-Verifica que el contexto de Spring Boot carga correctamente con todas las entidades.
+Pruebas de repositorios con H2 en memoria: consultas personalizadas, filtros y relaciones.
