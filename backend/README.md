@@ -1,32 +1,41 @@
-# Capa de Servicios
+# Capa de Controladores
 
-Cuarta capa del proyecto: implementa la lógica de negocio mediante interfaces de servicio e implementaciones concretas, con manejo de excepciones personalizadas.
+Quinta capa del proyecto: expone la API REST con controladores Spring MVC, manejo centralizado de errores y datos de prueba precargados.
 
-## Interfaces de servicio
+## Endpoints disponibles
 
-`CustomerService`, `ProductService`, `OrderService`, `AddressService`, `CategoryService`, `InventoryService`, `ReportService`
+| Controlador | Ruta base | Métodos |
+|-------------|-----------|---------|
+| `CustomerController` | `/api/customers` | GET, POST, PUT |
+| `ProductController` | `/api/products` | GET, POST, PUT, DELETE |
+| `OrderController` | `/api/orders` | GET, POST, PUT (filtros paginados) |
+| `CategoryController` | `/api/categories` | GET, POST, PUT, DELETE |
+| `AddressController` | `/api/addresses` | GET, POST, PUT, DELETE |
+| `ReportController` | `/api/reports` | GET |
 
-Cada interfaz define el contrato que debe cumplir la implementación, facilitando las pruebas unitarias con mocks.
+## Manejo de errores (api/error/)
 
-## Implementaciones (impl/)
+- `ApiError` — estructura de respuesta de error estandarizada
+- `GlobalExceptionHandler` — captura y transforma todas las excepciones en respuestas HTTP apropiadas
 
-Cada `*ServiceImpl` implementa su interfaz correspondiente con:
-- Validación de reglas de negocio
-- Llamadas al repositorio con transacciones (`@Transactional`)
-- Conversión entidad ↔ DTO mediante mappers
+## Configuración (config/)
 
-## Excepciones personalizadas (exception/)
+`WebConfig` — configura CORS para permitir peticiones desde el frontend en desarrollo (`localhost:5173`).
 
-| Excepción | Código HTTP |
-|-----------|-------------|
-| `ResourceNotFoundException` | 404 Not Found |
-| `ConflictException` | 409 Conflict |
-| `BusinessException` | 422 Unprocessable Entity |
-| `ValidationException` | 400 Bad Request |
+## Datos de prueba
+
+`data.sql` precarga 20 categorías, 80 productos, 16 clientes, 24 órdenes y sus datos relacionados.
+
+## Cómo probar la API
+
+```bash
+./mvnw spring-boot:run
+# API disponible en http://localhost:8082
+```
 
 ## Tests
 
 ```bash
 ./mvnw test
 ```
-Pruebas unitarias con Mockito: validan la lógica de negocio aislada del repositorio.
+Pruebas de integración con MockMvc: validan los endpoints, códigos HTTP y formato de respuesta.
