@@ -1,34 +1,32 @@
-# Capa de DTOs y Mappers
+# Capa de Servicios
 
-Tercera capa del proyecto: introduce los objetos de transferencia de datos (DTOs) y los mappers que convierten entre entidades y DTOs sin exponer el modelo interno.
+Cuarta capa del proyecto: implementa la lógica de negocio mediante interfaces de servicio e implementaciones concretas, con manejo de excepciones personalizadas.
 
-## DTOs (services/dto/)
+## Interfaces de servicio
 
-Cada entidad tiene su propio archivo de DTOs con records Java:
+`CustomerService`, `ProductService`, `OrderService`, `AddressService`, `CategoryService`, `InventoryService`, `ReportService`
 
-| Archivo | Records incluidos |
-|---------|------------------|
-| `CustomerDtos` | `CreateCustomerRequest`, `UpdateCustomerRequest`, `CustomerResponse` |
-| `ProductDtos` | `CreateProductRequest`, `UpdateProductRequest`, `ProductResponse` |
-| `OrderDtos` | `CreateOrderRequest`, `OrderResponse`, `OrderFilterRequest` |
-| `AddressDtos` | `CreateAddressRequest`, `AddressResponse` |
-| `CategoryDtos` | `CreateCategoryRequest`, `CategoryResponse` |
-| `InventoryDtos` | `UpdateStockRequest`, `InventoryResponse` |
-| `ReportDtos` | `BestSellingProductResponse`, `RevenueByPeriodResponse` |
+Cada interfaz define el contrato que debe cumplir la implementación, facilitando las pruebas unitarias con mocks.
 
-## Mappers (mappers/)
+## Implementaciones (impl/)
 
-Interfaces anotadas con `@Mapper` procesadas en tiempo de compilación por MapStruct:
-`CustomerMapper`, `ProductMapper`, `OrderMapper`, `AddressMapper`, `CategoryMapper`, `InventoryMapper`
+Cada `*ServiceImpl` implementa su interfaz correspondiente con:
+- Validación de reglas de negocio
+- Llamadas al repositorio con transacciones (`@Transactional`)
+- Conversión entidad ↔ DTO mediante mappers
 
-## Tecnologías añadidas
+## Excepciones personalizadas (exception/)
 
-- MapStruct 1.6.3
-- Jakarta Bean Validation
+| Excepción | Código HTTP |
+|-----------|-------------|
+| `ResourceNotFoundException` | 404 Not Found |
+| `ConflictException` | 409 Conflict |
+| `BusinessException` | 422 Unprocessable Entity |
+| `ValidationException` | 400 Bad Request |
 
 ## Tests
 
 ```bash
 ./mvnw test
 ```
-Prueba la conversión correcta entre entidades y DTOs en ambas direcciones.
+Pruebas unitarias con Mockito: validan la lógica de negocio aislada del repositorio.
