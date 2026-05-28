@@ -1,33 +1,34 @@
-# Capa de Repositorios
+# Capa de DTOs y Mappers
 
-Segunda capa del proyecto: define el acceso a datos mediante Spring Data JPA repositories, incluyendo consultas personalizadas y especificaciones dinámicas.
+Tercera capa del proyecto: introduce los objetos de transferencia de datos (DTOs) y los mappers que convierten entre entidades y DTOs sin exponer el modelo interno.
 
-## Repositorios
+## DTOs (services/dto/)
 
-| Repositorio | Características destacadas |
-|-------------|---------------------------|
-| `CustomerRepository` | Búsqueda por email (ignorando mayúsculas) |
-| `ProductRepository` | JOIN FETCH con categoría, filtro por activo y categoría |
-| `OrderRepository` | `JpaSpecificationExecutor` para filtros dinámicos |
-| `OrderItemRepository` | Consulta de productos más vendidos por rango de fechas |
-| `InventoryRepository` | Búsqueda por producto |
-| `CategoryRepository` | CRUD básico |
-| `AddressRepository` | Búsqueda por cliente |
-| `OrderStatusHistoryRepository` | Historial por orden |
+Cada entidad tiene su propio archivo de DTOs con records Java:
 
-## Especificaciones (spec/)
+| Archivo | Records incluidos |
+|---------|------------------|
+| `CustomerDtos` | `CreateCustomerRequest`, `UpdateCustomerRequest`, `CustomerResponse` |
+| `ProductDtos` | `CreateProductRequest`, `UpdateProductRequest`, `ProductResponse` |
+| `OrderDtos` | `CreateOrderRequest`, `OrderResponse`, `OrderFilterRequest` |
+| `AddressDtos` | `CreateAddressRequest`, `AddressResponse` |
+| `CategoryDtos` | `CreateCategoryRequest`, `CategoryResponse` |
+| `InventoryDtos` | `UpdateStockRequest`, `InventoryResponse` |
+| `ReportDtos` | `BestSellingProductResponse`, `RevenueByPeriodResponse` |
 
-`OrderSpecifications` — implementa filtros dinámicos para pedidos usando la API `Specification` de Spring Data JPA, evitando el problema de parámetros nulos en Hibernate 7.
+## Mappers (mappers/)
 
-## Tecnologías
+Interfaces anotadas con `@Mapper` procesadas en tiempo de compilación por MapStruct:
+`CustomerMapper`, `ProductMapper`, `OrderMapper`, `AddressMapper`, `CategoryMapper`, `InventoryMapper`
 
-- Spring Data JPA
-- JpaSpecificationExecutor
-- H2 (base de datos en memoria para tests)
+## Tecnologías añadidas
+
+- MapStruct 1.6.3
+- Jakarta Bean Validation
 
 ## Tests
 
 ```bash
 ./mvnw test
 ```
-Pruebas de repositorios con H2 en memoria: consultas personalizadas, filtros y relaciones.
+Prueba la conversión correcta entre entidades y DTOs en ambas direcciones.
