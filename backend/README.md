@@ -1,36 +1,33 @@
-# Capa de Controladores
+# Capa de Seguridad
 
-Quinta capa del proyecto: expone la API REST con controladores Spring MVC, manejo centralizado de errores y datos de prueba precargados.
+Sexta capa del proyecto: protege la API REST con autenticación JWT y autorización basada en roles usando Spring Security.
 
-## Endpoints disponibles
+## Qué agrega esta capa
 
-| Controlador | Ruta base | Métodos |
-|-------------|-----------|---------|
-| `CustomerController` | `/api/customers` | GET, POST, PUT |
-| `ProductController` | `/api/products` | GET, POST, PUT, DELETE |
-| `OrderController` | `/api/orders` | GET, POST, PUT (filtros paginados) |
-| `CategoryController` | `/api/categories` | GET, POST, PUT, DELETE |
-| `AddressController` | `/api/addresses` | GET, POST, PUT, DELETE |
-| `ReportController` | `/api/reports` | GET |
+### Autenticación JWT
+- `AuthController` (`/api/auth/register`, `/api/auth/login`) — registro y login, devuelve token JWT
+- `JwtService` — genera y valida tokens firmados con clave secreta
+- `JwtAuthenticationFilter` — intercepta cada request y verifica el token en el header `Authorization: Bearer <token>`
 
-## Manejo de errores (api/error/)
+### Modelo de usuarios
+- `AppUser` — entidad de usuario con email, contraseña encriptada y rol
+- `Role` — enum: `USER`, `ADMIN`
+- `AppUserRepository` — repositorio para buscar usuarios por email
 
-- `ApiError` — estructura de respuesta de error estandarizada
-- `GlobalExceptionHandler` — captura y transforma todas las excepciones en respuestas HTTP apropiadas
+### Configuración de seguridad
+- `SecurityConfig` — define reglas de acceso: `/api/auth/**` público, todo lo demás requiere autenticación
+- `SecurityBeans` — beans de `PasswordEncoder` y `AuthenticationManager`
+- `JpaUserDetailsService` — integra `AppUser` con Spring Security
 
-## Configuración (config/)
+### Manejo de errores HTTP
+- `Http401EntryPoint` — responde 401 cuando no hay token o es inválido
+- `Http403AccessDenied` — responde 403 cuando el token es válido pero no tiene permisos
 
-`WebConfig` — configura CORS para permitir peticiones desde el frontend en desarrollo (`localhost:5173`).
+## Variables de entorno requeridas
 
-## Datos de prueba
-
-`data.sql` precarga 20 categorías, 80 productos, 16 clientes, 24 órdenes y sus datos relacionados.
-
-## Cómo probar la API
-
-```bash
-./mvnw spring-boot:run
-# API disponible en http://localhost:8082
+```properties
+JWT_SECRET=clave-secreta-minimo-32-caracteres
+JWT_EXPIRATION_SECONDS=3600
 ```
 
 ## Tests
@@ -38,4 +35,4 @@ Quinta capa del proyecto: expone la API REST con controladores Spring MVC, manej
 ```bash
 ./mvnw test
 ```
-Pruebas de integración con MockMvc: validan los endpoints, códigos HTTP y formato de respuesta.
+`AuthControllerTest` prueba el flujo completo: registro, login y acceso a endpoint protegido con token.
