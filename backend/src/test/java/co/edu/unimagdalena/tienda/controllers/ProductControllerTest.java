@@ -1,21 +1,22 @@
 package co.edu.unimagdalena.tienda.controllers;
 
-import co.edu.unimagdalena.tienda.api.controllers.ProductController;
-import co.edu.unimagdalena.tienda.api.error.GlobalExceptionHandler;
 import co.edu.unimagdalena.tienda.exception.BusinessException;
 import co.edu.unimagdalena.tienda.exception.ConflictException;
 import co.edu.unimagdalena.tienda.services.InventoryService;
 import co.edu.unimagdalena.tienda.services.ProductService;
 import co.edu.unimagdalena.tienda.services.dto.InventoryDtos.InventoryResponse;
 import co.edu.unimagdalena.tienda.services.dto.ProductDtos.ProductResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -28,21 +29,24 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ProductController.class)
-@Import(GlobalExceptionHandler.class)
+@SpringBootTest
 class ProductControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    private WebApplicationContext wac;
 
     @MockitoBean
     private ProductService productService;
 
     @MockitoBean
     private InventoryService inventoryService;
+
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    }
 
     @Test
     void create_returns201() throws Exception {
@@ -78,13 +82,13 @@ class ProductControllerTest {
 
     @Test
     void findAll_filtersByCategory() throws Exception {
-        when(productService.findByCategoryId(2L)).thenReturn(List.of(
+        when(productService.findByCategoryId(eq(2L), any(Pageable.class))).thenReturn(new PageImpl<>(List.of(
                 new ProductResponse(1L, 2L, "Libros", "Libro Java", "LIB-001", new BigDecimal("35000"), true)
-        ));
+        )));
 
         mockMvc.perform(get("/api/products").param("categoryId", "2"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1));
+                .andExpect(jsonPath("$.content.length()").value(1));
     }
 
     @Test

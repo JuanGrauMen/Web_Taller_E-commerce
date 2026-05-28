@@ -1,20 +1,21 @@
 package co.edu.unimagdalena.tienda.controllers;
 
-import co.edu.unimagdalena.tienda.api.controllers.CustomerController;
-import co.edu.unimagdalena.tienda.api.error.GlobalExceptionHandler;
 import co.edu.unimagdalena.tienda.enums.CustomerStatus;
 import co.edu.unimagdalena.tienda.exception.ConflictException;
 import co.edu.unimagdalena.tienda.exception.ResourceNotFoundException;
 import co.edu.unimagdalena.tienda.services.CustomerService;
 import co.edu.unimagdalena.tienda.services.dto.CustomerDtos.CustomerResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 
@@ -27,18 +28,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(CustomerController.class)
-@Import(GlobalExceptionHandler.class)
+@SpringBootTest
 class CustomerControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    private WebApplicationContext wac;
 
     @MockitoBean
     private CustomerService service;
+
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    }
 
     @Test
     void create_returns201WithBody() throws Exception {
@@ -92,14 +96,14 @@ class CustomerControllerTest {
 
     @Test
     void findAll_returnsList() throws Exception {
-        when(service.findAll()).thenReturn(List.of(
+        when(service.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(List.of(
                 new CustomerResponse(1L, "A", "a@a.com", CustomerStatus.ACTIVE),
                 new CustomerResponse(2L, "B", "b@b.com", CustomerStatus.INACTIVE)
-        ));
+        )));
 
         mockMvc.perform(get("/api/customers"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2));
+                .andExpect(jsonPath("$.content.length()").value(2));
     }
 
     @Test

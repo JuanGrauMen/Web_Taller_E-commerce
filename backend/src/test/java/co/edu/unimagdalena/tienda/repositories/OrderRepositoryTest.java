@@ -5,9 +5,11 @@ import co.edu.unimagdalena.tienda.entities.Customer;
 import co.edu.unimagdalena.tienda.entities.Order;
 import co.edu.unimagdalena.tienda.enums.CustomerStatus;
 import co.edu.unimagdalena.tienda.enums.OrderStatus;
+import co.edu.unimagdalena.tienda.repositories.spec.OrderSpecifications;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -92,7 +94,8 @@ class OrderRepositoryTest {
         orderRepository.save(Order.builder().customer(c1).shippingAddress(savedAddress(c1)).build());
         orderRepository.save(Order.builder().customer(c2).shippingAddress(savedAddress(c2)).build());
 
-        var result = orderRepository.findByFilters(c1.getId(), null, null, null, null, null);
+        var spec = Specification.where(OrderSpecifications.hasCustomerId(c1.getId()));
+        var result = orderRepository.findAll(spec);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getCustomer().getId()).isEqualTo(c1.getId());
@@ -105,7 +108,8 @@ class OrderRepositoryTest {
         orderRepository.save(Order.builder().customer(customer).shippingAddress(address).status(OrderStatus.PAID).total(new BigDecimal("50000")).build());
         orderRepository.save(Order.builder().customer(customer).shippingAddress(address).status(OrderStatus.CREATED).total(new BigDecimal("30000")).build());
 
-        var result = orderRepository.findByFilters(null, OrderStatus.PAID, null, null, null, null);
+        var spec = Specification.where(OrderSpecifications.hasStatus(OrderStatus.PAID));
+        var result = orderRepository.findAll(spec);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getStatus()).isEqualTo(OrderStatus.PAID);
@@ -119,7 +123,9 @@ class OrderRepositoryTest {
         orderRepository.save(Order.builder().customer(customer).shippingAddress(address).total(new BigDecimal("50000")).build());
         orderRepository.save(Order.builder().customer(customer).shippingAddress(address).total(new BigDecimal("100000")).build());
 
-        var result = orderRepository.findByFilters(null, null, null, null, new BigDecimal("20000"), new BigDecimal("80000"));
+        var spec = Specification.where(OrderSpecifications.totalAtLeast(new BigDecimal("20000")))
+                .and(OrderSpecifications.totalAtMost(new BigDecimal("80000")));
+        var result = orderRepository.findAll(spec);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getTotal()).isEqualByComparingTo("50000");

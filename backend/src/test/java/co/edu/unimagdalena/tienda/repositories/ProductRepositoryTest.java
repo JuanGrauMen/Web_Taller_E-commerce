@@ -5,6 +5,7 @@ import co.edu.unimagdalena.tienda.entities.Product;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -44,7 +45,7 @@ class ProductRepositoryTest {
         productRepository.save(Product.builder().category(cat).name("Activo").sku("A-1").price(BigDecimal.TEN).active(true).build());
         productRepository.save(Product.builder().category(cat).name("Inactivo").sku("I-1").price(BigDecimal.TEN).active(false).build());
 
-        var result = productRepository.findByActiveTrueAndCategoryId(cat.getId());
+        var result = productRepository.findActiveByCategoryWithCategory(cat.getId(), Pageable.unpaged()).getContent();
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getSku()).isEqualTo("A-1");

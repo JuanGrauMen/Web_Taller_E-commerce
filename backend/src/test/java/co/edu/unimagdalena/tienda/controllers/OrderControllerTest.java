@@ -1,21 +1,20 @@
 package co.edu.unimagdalena.tienda.controllers;
 
-import co.edu.unimagdalena.tienda.api.controllers.OrderController;
-import co.edu.unimagdalena.tienda.api.error.GlobalExceptionHandler;
 import co.edu.unimagdalena.tienda.enums.OrderStatus;
 import co.edu.unimagdalena.tienda.exception.BusinessException;
 import co.edu.unimagdalena.tienda.exception.ResourceNotFoundException;
 import co.edu.unimagdalena.tienda.exception.ValidationException;
 import co.edu.unimagdalena.tienda.services.OrderService;
 import co.edu.unimagdalena.tienda.services.dto.OrderDtos.OrderResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -29,18 +28,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(OrderController.class)
-@Import(GlobalExceptionHandler.class)
+@SpringBootTest
 class OrderControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    private WebApplicationContext wac;
 
     @MockitoBean
     private OrderService service;
+
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    }
 
     private OrderResponse sampleOrder(OrderStatus status) {
         return new OrderResponse(1L, 1L, "Ana", 1L, status, new BigDecimal("50000"), List.of(), null, null);

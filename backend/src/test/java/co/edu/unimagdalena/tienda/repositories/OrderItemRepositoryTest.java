@@ -73,7 +73,7 @@ class OrderItemRepositoryTest {
                 .unitPrice(productB.getPrice()).subtotal(productB.getPrice().multiply(new BigDecimal("3")))
                 .build());
 
-        var result = orderItemRepository.findBestSellingProducts(null, null);
+        var result = orderItemRepository.findBestSellingProducts();
 
         assertThat(result).hasSize(2);
         assertThat((String) result.get(0)[2]).isEqualTo(productA.getSku());
@@ -98,7 +98,7 @@ class OrderItemRepositoryTest {
                 .unitPrice(product.getPrice()).subtotal(product.getPrice())
                 .build());
 
-        var result = orderItemRepository.findBestSellingProducts(null, null);
+        var result = orderItemRepository.findBestSellingProducts();
 
         assertThat(result).isEmpty();
     }
