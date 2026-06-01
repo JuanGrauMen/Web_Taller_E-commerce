@@ -7,6 +7,7 @@ const s = {
   form:  { display: 'flex', gap: '10px', alignItems: 'flex-end' },
   input: { padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px', minWidth: '220px' },
   btn:   { padding: '8px 18px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: '600', backgroundColor: '#3b82f6', color: '#fff' },
+  btnRed:{ padding: '4px 12px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '600', backgroundColor: '#fee2e2', color: '#991b1b' },
   table: { width: '100%', borderCollapse: 'collapse', fontSize: '14px' },
   th:    { textAlign: 'left', padding: '10px 12px', backgroundColor: '#f1f5f9', color: '#64748b', fontWeight: '600', borderBottom: '1px solid #e2e8f0' },
   td:    { padding: '10px 12px', borderBottom: '1px solid #f1f5f9', color: '#334155' },
@@ -14,10 +15,10 @@ const s = {
 }
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState([])
-  const [name, setName]             = useState('')
+  const [categories, setCategories]   = useState([])
+  const [name, setName]               = useState('')
   const [description, setDescription] = useState('')
-  const [error, setError]           = useState('')
+  const [error, setError]             = useState('')
 
   const load = () => categoryApi.findAll().then(setCategories).catch(e => setError(e.message))
 
@@ -30,6 +31,15 @@ export default function CategoriesPage() {
       await categoryApi.create({ name, description: description || undefined })
       setName('')
       setDescription('')
+      load()
+    } catch (e) { setError(e.message) }
+  }
+
+  const handleDelete = async (id, catName) => {
+    if (!window.confirm(`¿Desactivar la categoría "${catName}"?\nNo se puede eliminar si tiene productos activos.`)) return
+    setError('')
+    try {
+      await categoryApi.delete(id)
       load()
     } catch (e) { setError(e.message) }
   }
@@ -55,16 +65,22 @@ export default function CategoriesPage() {
               <th style={s.th}>ID</th>
               <th style={s.th}>Nombre</th>
               <th style={s.th}>Descripción</th>
+              <th style={s.th}>Acción</th>
             </tr>
           </thead>
           <tbody>
             {categories.length === 0 ? (
-              <tr><td colSpan={3} style={{ ...s.td, textAlign: 'center', color: '#94a3b8' }}>Sin categorías</td></tr>
+              <tr><td colSpan={4} style={{ ...s.td, textAlign: 'center', color: '#94a3b8' }}>Sin categorías</td></tr>
             ) : categories.map(c => (
               <tr key={c.id}>
                 <td style={s.td}>{c.id}</td>
                 <td style={s.td}><strong>{c.name}</strong></td>
                 <td style={s.td}>{c.description || '-'}</td>
+                <td style={s.td}>
+                  <button style={s.btnRed} onClick={() => handleDelete(c.id, c.name)}>
+                    Eliminar
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

@@ -10,4 +10,6 @@ public interface CategoryService {
     CategoryResponse create(CreateCategoryRequest request);
 
     List<CategoryResponse> findAllActive();
+
+    void delete(Long id);
 }

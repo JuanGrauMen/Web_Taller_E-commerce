@@ -68,8 +68,8 @@ export default function ReportsPage() {
           title="Productos mas vendidos"
           columns={[
             { key: 'productName', label: 'Producto' },
-            { key: 'sku', label: 'SKU' },
-            { key: 'totalSold', label: 'Vendidos', render: v => <strong>{v}</strong> }
+            { key: 'sku',         label: 'SKU' },
+            { key: 'unitsSold',   label: 'Vendidos', render: v => <strong>{v}</strong> }
           ]}
           rows={bestSelling}
         />
@@ -77,9 +77,9 @@ export default function ReportsPage() {
         <ReportTable
           title="Ingresos mensuales"
           columns={[
-            { key: 'year',  label: 'Año' },
-            { key: 'month', label: 'Mes' },
-            { key: 'totalIncome', label: 'Ingresos', render: v => `$${Number(v).toLocaleString()}` }
+            { key: 'month',  label: 'Período', render: (_, row) => row.month?.split('-')[0] ?? '-' },
+            { key: 'month',  label: 'Mes',     render: (_, row) => row.month?.split('-')[1] ?? '-' },
+            { key: 'income', label: 'Ingresos', render: v => `$${Number(v).toLocaleString()}` }
           ]}
           rows={monthlyIncome}
         />
@@ -87,10 +87,8 @@ export default function ReportsPage() {
         <ReportTable
           title="Top clientes"
           columns={[
-            { key: 'customerName',  label: 'Cliente' },
-            { key: 'email',         label: 'Email' },
-            { key: 'totalOrders',   label: 'Órdenes' },
-            { key: 'totalSpent',    label: 'Total gastado', render: v => `$${Number(v).toLocaleString()}` }
+            { key: 'customerName', label: 'Cliente' },
+            { key: 'totalBilled',  label: 'Total facturado', render: v => `$${Number(v).toLocaleString()}` }
           ]}
           rows={topCustomers}
         />

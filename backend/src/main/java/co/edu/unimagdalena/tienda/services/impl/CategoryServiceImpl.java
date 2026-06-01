@@ -2,7 +2,9 @@ package co.edu.unimagdalena.tienda.services.impl;
 
 import co.edu.unimagdalena.tienda.services.dto.CategoryDtos.CategoryResponse;
 import co.edu.unimagdalena.tienda.services.dto.CategoryDtos.CreateCategoryRequest;
+import co.edu.unimagdalena.tienda.exception.BusinessException;
 import co.edu.unimagdalena.tienda.exception.ConflictException;
+import co.edu.unimagdalena.tienda.exception.ResourceNotFoundException;
 import co.edu.unimagdalena.tienda.mappers.CategoryMapper;
 import co.edu.unimagdalena.tienda.repositories.CategoryRepository;
 import co.edu.unimagdalena.tienda.services.CategoryService;
@@ -32,5 +34,16 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     public List<CategoryResponse> findAllActive() {
         return repository.findByActiveTrueOrderByNameAsc().stream().map(mapper::toResponse).toList();
+    }
+
+    @Override
+    public void delete(Long id) {
+        var category = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", id));
+        if (repository.existsActiveProductByCategoryId(id)) {
+            throw new BusinessException("Cannot delete a category that has active products");
+        }
+        category.setActive(false);
+        repository.save(category);
     }
 }

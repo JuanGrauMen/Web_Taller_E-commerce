@@ -37,14 +37,16 @@ export const productApi = {
 // ---------- CATEGORIAS ----------
 export const categoryApi = {
   findAll: () => request('/categories'),
-  create:  (data) => request('/categories', { method: 'POST', body: JSON.stringify(data) })
+  create:  (data) => request('/categories', { method: 'POST', body: JSON.stringify(data) }),
+  delete:  (id)   => request(`/categories/${id}`, { method: 'DELETE' })
 }
 
 // ---------- ORDENES ----------
 export const orderApi = {
-  findAll:  (params = {}) => {
-    const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== '' && v != null))
-    return request(`/orders${q.toString() ? '?' + q : ''}`).then(unpage)
+  // Devuelve el Page completo { content, totalPages, number, ... }
+  findAll:  (params = {}, page = 0, size = 15) => {
+    const q = new URLSearchParams(Object.entries({ ...params, page, size }).filter(([, v]) => v !== '' && v != null))
+    return request(`/orders${q.toString() ? '?' + q : ''}`)
   },
   get:      (id)   => request(`/orders/${id}`),
   create:   (data) => request('/orders', { method: 'POST', body: JSON.stringify(data) }),
@@ -56,11 +58,12 @@ export const orderApi = {
 
 // ---------- CLIENTES ----------
 export const customerApi = {
-  findAll: ()          => request('/customers').then(unpage),
-  get:     (id)        => request(`/customers/${id}`),
-  create:  (data)      => request('/customers', { method: 'POST', body: JSON.stringify(data) }),
-  update:  (id, data)  => request(`/customers/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  addresses: (id)      => request(`/customers/${id}/addresses`)
+  // Devuelve el Page completo { content, totalPages, number, ... }
+  findAll:   (page = 0, size = 15) => request(`/customers?page=${page}&size=${size}`),
+  get:       (id)       => request(`/customers/${id}`),
+  create:    (data)     => request('/customers', { method: 'POST', body: JSON.stringify(data) }),
+  update:    (id, data) => request(`/customers/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  addresses: (id)       => request(`/customers/${id}/addresses`)
 }
 
 // ---------- REPORTES ----------

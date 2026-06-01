@@ -17,6 +17,8 @@ const s = {
   btnBlue: { backgroundColor: '#3b82f6', color: '#fff' },
   btnGray: { backgroundColor: '#e2e8f0', color: '#475569' },
   btnRed:  { backgroundColor: '#fee2e2', color: '#991b1b' },
+  pagination: { display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', marginTop: '16px' },
+  pageBtn: { padding: '6px 14px', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer', fontSize: '13px', fontWeight: '600', backgroundColor: '#fff', color: '#475569' },
   table:   { width: '100%', borderCollapse: 'collapse', fontSize: '14px' },
   th:      { textAlign: 'left', padding: '10px 12px', backgroundColor: '#f1f5f9', color: '#64748b', fontWeight: '600', borderBottom: '1px solid #e2e8f0' },
   td:      { padding: '10px 12px', borderBottom: '1px solid #f1f5f9', color: '#334155', verticalAlign: 'middle' },
@@ -27,23 +29,28 @@ const s = {
 const STATUSES = ['', 'CREATED', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED']
 
 export default function OrdersPage() {
-  const [orders, setOrders]     = useState([])
-  const [filter, setFilter]     = useState({ customerId: '', status: '' })
-  const [error, setError]       = useState('')
-  const [loading, setLoading]   = useState(true)
+  const [orders, setOrders]         = useState([])
+  const [totalPages, setTotalPages] = useState(0)
+  const [page, setPage]             = useState(0)
+  const [filter, setFilter]         = useState({ customerId: '', status: '' })
+  const [error, setError]           = useState('')
+  const [loading, setLoading]       = useState(true)
   const [cancelNote, setCancelNote] = useState({})
 
-  const load = async () => {
+  const load = async (p = page, f = filter) => {
     setLoading(true)
     setError('')
     try {
-      const data = await orderApi.findAll(filter)
-      setOrders(data)
+      const data = await orderApi.findAll(f, p, 15)
+      setOrders(data.content ?? [])
+      setTotalPages(data.totalPages ?? 0)
     } catch (e) { setError(e.message) }
     finally { setLoading(false) }
   }
 
-  useEffect(() => { load() }, [])
+  const goToPage = (p) => { setPage(p); load(p) }
+
+  useEffect(() => { load(0) }, [])
 
   const action = async (fn, ...args) => {
     setError('')
@@ -79,14 +86,18 @@ export default function OrdersPage() {
           <select style={s.input} value={filter.status} onChange={e => setFilter({ ...filter, status: e.target.value })}>
             {STATUSES.map(st => <option key={st} value={st}>{st || 'Todos los estados'}</option>)}
           </select>
-          <button style={{ ...s.btn, ...s.btnBlue }} onClick={load}>Filtrar</button>
-          <button style={{ ...s.btn, ...s.btnGray }} onClick={() => { setFilter({ customerId: '', status: '' }); setTimeout(load, 50) }}>Limpiar</button>
+          <button style={{ ...s.btn, ...s.btnBlue }} onClick={() => { setPage(0); load(0) }}>Filtrar</button>
+          <button style={{ ...s.btn, ...s.btnGray }} onClick={() => { const f = { customerId: '', status: '' }; setFilter(f); setPage(0); load(0, f) }}>Limpiar</button>
         </div>
         {error && <p style={s.error}>{error}</p>}
       </div>
 
       <div style={s.card}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <span style={{ fontSize: '13px', color: '#64748b' }}>Página {page + 1} de {totalPages || 1}</span>
+        </div>
         {loading ? <p>Cargando...</p> : (
+          <>
           <table style={s.table}>
             <thead>
               <tr>
@@ -118,6 +129,21 @@ export default function OrdersPage() {
               })}
             </tbody>
           </table>
+
+          {totalPages > 1 && (
+            <div style={s.pagination}>
+              <button style={{ ...s.pageBtn, ...(page === 0 ? { opacity: 0.4, cursor: 'not-allowed' } : {}) }}
+                disabled={page === 0} onClick={() => goToPage(page - 1)}>← Anterior</button>
+              {Array.from({ length: totalPages }, (_, i) => i).map(i => (
+                <button key={i}
+                  style={{ ...s.pageBtn, ...(i === page ? { backgroundColor: '#3b82f6', color: '#fff', borderColor: '#3b82f6' } : {}) }}
+                  onClick={() => goToPage(i)}>{i + 1}</button>
+              ))}
+              <button style={{ ...s.pageBtn, ...(page >= totalPages - 1 ? { opacity: 0.4, cursor: 'not-allowed' } : {}) }}
+                disabled={page >= totalPages - 1} onClick={() => goToPage(page + 1)}>Siguiente →</button>
+            </div>
+          )}
+          </>
         )}
       </div>
     </div>
