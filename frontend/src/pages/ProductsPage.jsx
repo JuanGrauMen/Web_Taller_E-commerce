@@ -18,7 +18,7 @@ const s = {
   pageBtn: { padding: '6px 14px', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer', fontSize: '13px', fontWeight: '600', backgroundColor: '#fff', color: '#475569' }
 }
 
-const emptyForm = { categoryId: '', name: '', sku: '', price: '', description: '', availableStock: '0', minimumStock: '0' }
+const emptyForm = { categoryId: '', name: '', sku: '', price: '', description: '', availableStock: '', minimumStock: '' }
 const PAGE_SIZE = 15
 
 export default function ProductsPage() {
