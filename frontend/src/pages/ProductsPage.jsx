@@ -104,12 +104,11 @@ export default function ProductsPage() {
     const prefix = categoryPrefix(catName)
     setSkuLoading(true)
     try {
-      const data = await productApi.findAll(catId, 0, 200)
-      const all  = data.content ?? []
+      const skus = await productApi.getSkusByCategory(catId)
       const re   = new RegExp(`^${prefix}-(\\d+)$`, 'i')
       let max = 0
-      for (const p of all) {
-        const m = p.sku.match(re)
+      for (const sku of skus) {
+        const m = sku.match(re)
         if (m) max = Math.max(max, parseInt(m[1], 10))
       }
       const next = String(max + 1).padStart(3, '0')

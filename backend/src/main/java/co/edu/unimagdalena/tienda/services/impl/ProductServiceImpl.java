@@ -19,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -78,6 +80,12 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(request.price());
         product.setActive(request.active());
         return mapper.toResponse(productRepository.save(product));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getSkusByCategoryId(Long categoryId) {
+        return productRepository.findAllSkusByCategoryId(categoryId);
     }
 
     private co.edu.unimagdalena.tienda.entities.Product findOrThrow(Long id) {

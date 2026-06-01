@@ -33,6 +33,7 @@ export const productApi = {
   get:             (id)         => request(`/products/${id}`),
   create:          (data)       => request('/products', { method: 'POST', body: JSON.stringify(data) }),
   update:          (id, data)   => request(`/products/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  getSkusByCategory: (categoryId) => request(`/products/skus?categoryId=${categoryId}`),
   getInventory:    (id)         => request(`/products/${id}/inventory`),
   updateInventory: (id, data)   => request(`/products/${id}/inventory`, { method: 'PUT', body: JSON.stringify(data) })
 }

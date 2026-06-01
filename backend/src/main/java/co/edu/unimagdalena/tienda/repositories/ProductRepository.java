@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -14,6 +15,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findBySkuIgnoreCase(String sku);
 
     boolean existsBySkuIgnoreCase(String sku);
+
+    @Query("SELECT p.sku FROM Product p WHERE p.category.id = :categoryId")
+    List<String> findAllSkusByCategoryId(@Param("categoryId") Long categoryId);
 
     @Query(value = "SELECT p FROM Product p JOIN FETCH p.category LEFT JOIN FETCH p.inventory WHERE p.active = true",
            countQuery = "SELECT COUNT(p) FROM Product p WHERE p.active = true")

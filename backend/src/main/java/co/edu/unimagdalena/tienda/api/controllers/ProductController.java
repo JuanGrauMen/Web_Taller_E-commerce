@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
@@ -51,6 +53,11 @@ public class ProductController {
     @PutMapping("/{id}")
     public ProductResponse update(@PathVariable Long id, @Valid @RequestBody UpdateProductRequest request) {
         return productService.update(id, request);
+    }
+
+    @GetMapping("/skus")
+    public List<String> getSkusByCategory(@RequestParam Long categoryId) {
+        return productService.getSkusByCategoryId(categoryId);
     }
 
     @GetMapping("/{id}/inventory")
