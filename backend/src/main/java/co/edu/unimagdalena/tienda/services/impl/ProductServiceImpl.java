@@ -42,8 +42,8 @@ public class ProductServiceImpl implements ProductService {
         var saved = productRepository.save(product);
         inventoryRepository.save(Inventory.builder()
                 .product(saved)
-                .availableStock(0)
-                .minimumStock(0)
+                .availableStock(request.availableStock())
+                .minimumStock(request.minimumStock())
                 .build());
         return mapper.toResponse(saved);
     }

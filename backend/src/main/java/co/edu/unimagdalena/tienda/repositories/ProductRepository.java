@@ -15,11 +15,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     boolean existsBySkuIgnoreCase(String sku);
 
-    @Query(value = "SELECT p FROM Product p JOIN FETCH p.category WHERE p.active = true",
+    @Query(value = "SELECT p FROM Product p JOIN FETCH p.category LEFT JOIN FETCH p.inventory WHERE p.active = true",
            countQuery = "SELECT COUNT(p) FROM Product p WHERE p.active = true")
     Page<Product> findActiveWithCategory(Pageable pageable);
 
-    @Query(value = "SELECT p FROM Product p JOIN FETCH p.category WHERE p.active = true AND p.category.id = :categoryId",
+    @Query(value = "SELECT p FROM Product p JOIN FETCH p.category LEFT JOIN FETCH p.inventory WHERE p.active = true AND p.category.id = :categoryId",
            countQuery = "SELECT COUNT(p) FROM Product p WHERE p.active = true AND p.category.id = :categoryId")
     Page<Product> findActiveByCategoryWithCategory(@Param("categoryId") Long categoryId, Pageable pageable);
 }

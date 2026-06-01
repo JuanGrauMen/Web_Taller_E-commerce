@@ -1,6 +1,7 @@
 package co.edu.unimagdalena.tienda.services.dto;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -12,7 +13,9 @@ public class ProductDtos {
             @NotNull Long categoryId,
             @NotBlank String name,
             @NotBlank String sku,
-            @NotNull @DecimalMin("0.01") BigDecimal price
+            @NotNull @DecimalMin("0.01") BigDecimal price,
+            @Min(0) int availableStock,
+            @Min(0) int minimumStock
     ) {
     }
 
@@ -30,7 +33,9 @@ public class ProductDtos {
             String name,
             String sku,
             BigDecimal price,
-            boolean active
+            boolean active,
+            int availableStock,
+            int minimumStock
     ) {
     }
 }

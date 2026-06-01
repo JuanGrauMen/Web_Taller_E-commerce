@@ -17,7 +17,7 @@ const s = {
   count:   { fontSize: '13px', color: '#64748b' }
 }
 
-const emptyForm = { categoryId: '', name: '', sku: '', price: '', description: '' }
+const emptyForm = { categoryId: '', name: '', sku: '', price: '', description: '', availableStock: '0', minimumStock: '0' }
 
 export default function ProductsPage() {
   const [products, setProducts]     = useState([])
@@ -47,11 +47,13 @@ export default function ProductsPage() {
     setError('')
     try {
       await productApi.create({
-        categoryId: Number(form.categoryId),
-        name: form.name,
-        sku: form.sku,
-        price: Number(form.price),
-        description: form.description || undefined
+        categoryId:     Number(form.categoryId),
+        name:           form.name,
+        sku:            form.sku,
+        price:          Number(form.price),
+        description:    form.description || undefined,
+        availableStock: Number(form.availableStock) || 0,
+        minimumStock:   Number(form.minimumStock)   || 0
       })
       setForm(emptyForm)
       load()
@@ -66,6 +68,10 @@ export default function ProductsPage() {
         price:  Number(editData.price),
         active: editData.active === 'true' || editData.active === true
       })
+      await productApi.updateInventory(id, {
+        availableStock: Number(editData.availableStock) || 0,
+        minimumStock:   Number(editData.minimumStock)   || 0
+      })
       setEditId(null)
       load()
     } catch (e) { setError(e.message) }
@@ -73,7 +79,13 @@ export default function ProductsPage() {
 
   const startEdit = (p) => {
     setEditId(p.id)
-    setEditData({ name: p.name, price: p.price, active: p.active })
+    setEditData({
+      name:           p.name,
+      price:          p.price,
+      active:         p.active,
+      availableStock: p.availableStock ?? 0,
+      minimumStock:   p.minimumStock   ?? 0
+    })
   }
 
   return (
@@ -89,8 +101,10 @@ export default function ProductsPage() {
           </select>
           <input style={s.input} placeholder="Nombre" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
           <input style={s.input} placeholder="SKU" value={form.sku} onChange={e => setForm({ ...form, sku: e.target.value })} required />
-          <input style={s.input} placeholder="Precio" type="number" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required />
-          <input style={s.input} placeholder="Descripción" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
+          <input style={s.input} placeholder="Precio" type="number" min="0.01" step="0.01" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required />
+          <input style={{ ...s.input, minWidth: '100px' }} placeholder="Stock inicial" type="number" min="0" value={form.availableStock} onChange={e => setForm({ ...form, availableStock: e.target.value })} />
+          <input style={{ ...s.input, minWidth: '100px' }} placeholder="Stock mínimo" type="number" min="0" value={form.minimumStock} onChange={e => setForm({ ...form, minimumStock: e.target.value })} />
+          <input style={s.input} placeholder="Descripción (opcional)" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
           <button type="submit" style={{ ...s.btn, ...s.btnBlue }}>Crear</button>
         </form>
         {error && <p style={s.error}>{error}</p>}
@@ -122,59 +136,80 @@ export default function ProductsPage() {
                 <th style={s.th}>SKU</th>
                 <th style={s.th}>Categoría</th>
                 <th style={s.th}>Precio</th>
+                <th style={s.th}>Stock</th>
+                <th style={s.th}>Mínimo</th>
                 <th style={s.th}>Estado</th>
                 <th style={s.th}>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {products.length === 0 ? (
-                <tr><td colSpan={7} style={{ ...s.td, textAlign: 'center', color: '#94a3b8' }}>Sin productos</td></tr>
-              ) : products.map(p => (
-                <tr key={p.id}>
-                  <td style={s.td}>{p.id}</td>
-                  <td style={s.td}>
-                    {editId === p.id
-                      ? <input style={{ ...s.input, padding: '4px 8px', minWidth: '160px' }}
-                          value={editData.name}
-                          onChange={e => setEditData({ ...editData, name: e.target.value })} />
-                      : <strong>{p.name}</strong>}
-                  </td>
-                  <td style={s.td}><code>{p.sku}</code></td>
-                  <td style={s.td}>{p.categoryName}</td>
-                  <td style={s.td}>
-                    {editId === p.id
-                      ? <input style={{ ...s.input, padding: '4px 8px', width: '110px' }}
-                          type="number" value={editData.price}
-                          onChange={e => setEditData({ ...editData, price: e.target.value })} />
-                      : `$${Number(p.price).toLocaleString()}`}
-                  </td>
-                  <td style={s.td}>
-                    {editId === p.id
-                      ? <select style={{ ...s.input, padding: '4px 8px' }}
-                          value={String(editData.active)}
-                          onChange={e => setEditData({ ...editData, active: e.target.value })}>
-                          <option value="true">Activo</option>
-                          <option value="false">Inactivo</option>
-                        </select>
-                      : <span style={{ ...s.badge, background: p.active ? '#dcfce7' : '#fee2e2', color: p.active ? '#166534' : '#991b1b' }}>
-                          {p.active ? 'Activo' : 'Inactivo'}
-                        </span>}
-                  </td>
-                  <td style={s.td}>
-                    {editId === p.id ? (
-                      <>
-                        <button style={{ ...s.btn, ...s.btnBlue, padding: '4px 12px', fontSize: '12px', marginRight: '6px' }}
-                          onClick={() => handleUpdate(p.id)}>Guardar</button>
+                <tr><td colSpan={9} style={{ ...s.td, textAlign: 'center', color: '#94a3b8' }}>Sin productos</td></tr>
+              ) : products.map(p => {
+                const stockBajo = p.availableStock <= p.minimumStock
+                return (
+                  <tr key={p.id}>
+                    <td style={s.td}>{p.id}</td>
+                    <td style={s.td}>
+                      {editId === p.id
+                        ? <input style={{ ...s.input, padding: '4px 8px', minWidth: '150px' }}
+                            value={editData.name}
+                            onChange={e => setEditData({ ...editData, name: e.target.value })} />
+                        : <strong>{p.name}</strong>}
+                    </td>
+                    <td style={s.td}><code>{p.sku}</code></td>
+                    <td style={s.td}>{p.categoryName}</td>
+                    <td style={s.td}>
+                      {editId === p.id
+                        ? <input style={{ ...s.input, padding: '4px 8px', width: '100px' }}
+                            type="number" min="0.01" step="0.01" value={editData.price}
+                            onChange={e => setEditData({ ...editData, price: e.target.value })} />
+                        : `$${Number(p.price).toLocaleString()}`}
+                    </td>
+                    <td style={s.td}>
+                      {editId === p.id
+                        ? <input style={{ ...s.input, padding: '4px 8px', width: '70px' }}
+                            type="number" min="0" value={editData.availableStock}
+                            onChange={e => setEditData({ ...editData, availableStock: e.target.value })} />
+                        : <span style={{ fontWeight: '600', color: stockBajo ? '#dc2626' : '#166534' }}>
+                            {p.availableStock}
+                          </span>}
+                    </td>
+                    <td style={s.td}>
+                      {editId === p.id
+                        ? <input style={{ ...s.input, padding: '4px 8px', width: '70px' }}
+                            type="number" min="0" value={editData.minimumStock}
+                            onChange={e => setEditData({ ...editData, minimumStock: e.target.value })} />
+                        : p.minimumStock}
+                    </td>
+                    <td style={s.td}>
+                      {editId === p.id
+                        ? <select style={{ ...s.input, padding: '4px 8px' }}
+                            value={String(editData.active)}
+                            onChange={e => setEditData({ ...editData, active: e.target.value })}>
+                            <option value="true">Activo</option>
+                            <option value="false">Inactivo</option>
+                          </select>
+                        : <span style={{ ...s.badge, background: p.active ? '#dcfce7' : '#fee2e2', color: p.active ? '#166534' : '#991b1b' }}>
+                            {p.active ? 'Activo' : 'Inactivo'}
+                          </span>}
+                    </td>
+                    <td style={s.td}>
+                      {editId === p.id ? (
+                        <>
+                          <button style={{ ...s.btn, ...s.btnBlue, padding: '4px 12px', fontSize: '12px', marginRight: '6px' }}
+                            onClick={() => handleUpdate(p.id)}>Guardar</button>
+                          <button style={{ ...s.btn, ...s.btnGray, padding: '4px 12px', fontSize: '12px' }}
+                            onClick={() => setEditId(null)}>Cancelar</button>
+                        </>
+                      ) : (
                         <button style={{ ...s.btn, ...s.btnGray, padding: '4px 12px', fontSize: '12px' }}
-                          onClick={() => setEditId(null)}>Cancelar</button>
-                      </>
-                    ) : (
-                      <button style={{ ...s.btn, ...s.btnGray, padding: '4px 12px', fontSize: '12px' }}
-                        onClick={() => startEdit(p)}>Editar</button>
-                    )}
-                  </td>
-                </tr>
-              ))}
+                          onClick={() => startEdit(p)}>Editar</button>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         )}

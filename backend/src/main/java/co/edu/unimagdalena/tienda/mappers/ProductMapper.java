@@ -19,7 +19,9 @@ public interface ProductMapper {
     @Mapping(target = "orderItems", ignore = true)
     Product toEntity(CreateProductRequest request);
 
-    @Mapping(target = "categoryId", source = "category.id")
-    @Mapping(target = "categoryName", source = "category.name")
+    @Mapping(target = "categoryId",     source = "category.id")
+    @Mapping(target = "categoryName",   source = "category.name")
+    @Mapping(target = "availableStock", source = "inventory.availableStock")
+    @Mapping(target = "minimumStock",   source = "inventory.minimumStock")
     ProductResponse toResponse(Product product);
 }
