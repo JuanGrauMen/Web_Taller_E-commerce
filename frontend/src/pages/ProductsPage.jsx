@@ -21,12 +21,24 @@ const s = {
 const emptyForm = { categoryId: '', name: '', sku: '', price: '', description: '', availableStock: '', minimumStock: '' }
 const PAGE_SIZE = 15
 
+function categoryPrefix(categoryName) {
+  return categoryName
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-zA-Z ]/g, '')
+    .trim()
+    .split(/\s+/)[0]
+    .toUpperCase()
+    .slice(0, 3)
+}
+
 export default function ProductsPage() {
   const [products, setProducts]     = useState([])
   const [totalPages, setTotalPages] = useState(0)
   const [page, setPage]             = useState(0)
   const [categories, setCategories] = useState([])
   const [form, setForm]             = useState(emptyForm)
+  const [skuLoading, setSkuLoading] = useState(false)
   const [filterCat, setFilterCat]   = useState('')
   const [editId, setEditId]         = useState(null)
   const [editData, setEditData]     = useState({})
@@ -87,6 +99,35 @@ export default function ProductsPage() {
     setEditData({ name: p.name, price: p.price, active: p.active })
   }
 
+  const generateSku = async (catId, catName) => {
+    if (!catId || !catName) return
+    const prefix = categoryPrefix(catName)
+    setSkuLoading(true)
+    try {
+      const data = await productApi.findAll(catId, 0, 200)
+      const all  = data.content ?? []
+      const re   = new RegExp(`^${prefix}-(\\d+)$`, 'i')
+      let max = 0
+      for (const p of all) {
+        const m = p.sku.match(re)
+        if (m) max = Math.max(max, parseInt(m[1], 10))
+      }
+      const next = String(max + 1).padStart(3, '0')
+      setForm(f => ({ ...f, sku: `${prefix}-${next}` }))
+    } catch {
+      setForm(f => ({ ...f, sku: `${prefix}-001` }))
+    } finally {
+      setSkuLoading(false)
+    }
+  }
+
+  const handleCategoryChange = (e) => {
+    const catId = e.target.value
+    const cat   = categories.find(c => String(c.id) === catId)
+    setForm(f => ({ ...f, categoryId: catId, sku: '' }))
+    if (cat) generateSku(catId, cat.name)
+  }
+
   const handleFilterChange = (catId) => {
     setFilterCat(catId)
     setPage(0)
@@ -100,12 +141,18 @@ export default function ProductsPage() {
       <div style={s.card}>
         <h3 style={{ margin: '0 0 14px', color: '#475569', fontSize: '15px' }}>Nuevo Producto</h3>
         <form onSubmit={handleSubmit} style={s.form}>
-          <select style={s.input} value={form.categoryId} onChange={e => setForm({ ...form, categoryId: e.target.value })} required>
+          <select style={s.input} value={form.categoryId} onChange={handleCategoryChange} required>
             <option value="">Categoría</option>
             {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
           <input style={s.input} placeholder="Nombre" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
-          <input style={s.input} placeholder="SKU" value={form.sku} onChange={e => setForm({ ...form, sku: e.target.value })} required />
+          <input
+            style={{ ...s.input, backgroundColor: '#f8fafc', color: '#64748b', cursor: 'default' }}
+            placeholder={skuLoading ? 'Generando...' : 'SKU (elige categoría)'}
+            value={form.sku}
+            readOnly
+            required
+          />
           <input style={s.input} placeholder="Precio" type="number" min="0.01" step="0.01" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required />
           <input style={{ ...s.input, minWidth: '110px' }} placeholder="Stock" type="number" min="0" value={form.availableStock} onChange={e => setForm({ ...form, availableStock: e.target.value })} />
           <input style={{ ...s.input, minWidth: '110px' }} placeholder="Mínimo" type="number" min="0" value={form.minimumStock} onChange={e => setForm({ ...form, minimumStock: e.target.value })} />
