@@ -373,3 +373,258 @@ INSERT INTO order_status_history (order_id, from_status, to_status, changed_at, 
 INSERT INTO order_status_history (order_id, from_status, to_status, changed_at, note) SELECT o.id, NULL,       'CREATED',   o.created_at,                          'Orden creada'                    FROM orders o WHERE o.status = 'CREATED'   AND NOT EXISTS (SELECT 1 FROM order_status_history LIMIT 1);
 INSERT INTO order_status_history (order_id, from_status, to_status, changed_at, note) SELECT o.id, NULL,       'CREATED',   o.created_at,                          'Orden creada'                    FROM orders o WHERE o.status = 'CANCELLED' AND NOT EXISTS (SELECT 1 FROM order_status_history LIMIT 1);
 INSERT INTO order_status_history (order_id, from_status, to_status, changed_at, note) SELECT o.id, 'CREATED',  'CANCELLED', o.created_at + INTERVAL '1 day',       'Orden cancelada por el cliente'  FROM orders o WHERE o.status = 'CANCELLED' AND NOT EXISTS (SELECT 1 FROM order_status_history LIMIT 1);
+
+-- =============================================
+-- ÓRDENES EXTRA (22) — guard por email+total
+-- Distribuidas en Feb-May 2026 para los reportes
+-- =============================================
+
+-- ── DELIVERED: Febrero 2026 ──────────────────
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'DELIVERED', 270000.00, NOW()-INTERVAL '115 days', NOW()-INTERVAL '108 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'juan.garcia@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'juan.garcia@unimagdalena.edu.co' AND o2.total = 270000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'DELIVERED', 222000.00, NOW()-INTERVAL '110 days', NOW()-INTERVAL '103 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'maria.lopez@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'maria.lopez@unimagdalena.edu.co' AND o2.total = 222000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'DELIVERED', 163000.00, NOW()-INTERVAL '105 days', NOW()-INTERVAL '98 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'carlos.rodriguez@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'carlos.rodriguez@unimagdalena.edu.co' AND o2.total = 163000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'DELIVERED', 330000.00, NOW()-INTERVAL '100 days', NOW()-INTERVAL '93 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'ana.martinez@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'ana.martinez@unimagdalena.edu.co' AND o2.total = 330000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'DELIVERED', 433000.00, NOW()-INTERVAL '95 days', NOW()-INTERVAL '88 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'pedro.hernandez@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'pedro.hernandez@unimagdalena.edu.co' AND o2.total = 433000.00);
+
+-- ── DELIVERED: Marzo 2026 ────────────────────
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'DELIVERED', 210000.00, NOW()-INTERVAL '75 days', NOW()-INTERVAL '68 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'laura.sanchez@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'laura.sanchez@unimagdalena.edu.co' AND o2.total = 210000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'DELIVERED', 275000.00, NOW()-INTERVAL '70 days', NOW()-INTERVAL '63 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'diego.torres@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'diego.torres@unimagdalena.edu.co' AND o2.total = 275000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'DELIVERED', 250000.00, NOW()-INTERVAL '65 days', NOW()-INTERVAL '58 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'sofia.ramirez@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'sofia.ramirez@unimagdalena.edu.co' AND o2.total = 250000.00);
+
+-- ── DELIVERED: Abril 2026 ────────────────────
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'DELIVERED', 165000.00, NOW()-INTERVAL '60 days', NOW()-INTERVAL '53 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'andres.morales@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'andres.morales@unimagdalena.edu.co' AND o2.total = 165000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'DELIVERED', 258000.00, NOW()-INTERVAL '55 days', NOW()-INTERVAL '48 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'valentina.cruz@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'valentina.cruz@unimagdalena.edu.co' AND o2.total = 258000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'DELIVERED', 360000.00, NOW()-INTERVAL '48 days', NOW()-INTERVAL '41 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'miguel.vargas@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'miguel.vargas@unimagdalena.edu.co' AND o2.total = 360000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'DELIVERED', 174000.00, NOW()-INTERVAL '42 days', NOW()-INTERVAL '35 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'isabella.diaz@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'isabella.diaz@unimagdalena.edu.co' AND o2.total = 174000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'DELIVERED', 135000.00, NOW()-INTERVAL '35 days', NOW()-INTERVAL '28 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'felipe.castro@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'felipe.castro@unimagdalena.edu.co' AND o2.total = 135000.00);
+
+-- ── DELIVERED: Mayo 2026 ─────────────────────
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'DELIVERED', 111000.00, NOW()-INTERVAL '28 days', NOW()-INTERVAL '21 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'camila.jimenez@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'camila.jimenez@unimagdalena.edu.co' AND o2.total = 111000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'DELIVERED', 108000.00, NOW()-INTERVAL '21 days', NOW()-INTERVAL '14 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'santiago.reyes@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'santiago.reyes@unimagdalena.edu.co' AND o2.total = 108000.00);
+
+-- ── PAID (recientes — último mes) ───────────
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'PAID', 650000.00, NOW()-INTERVAL '13 days', NOW()-INTERVAL '12 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'juan.garcia@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'juan.garcia@unimagdalena.edu.co' AND o2.total = 650000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'PAID', 270000.00, NOW()-INTERVAL '11 days', NOW()-INTERVAL '10 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'carlos.rodriguez@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'carlos.rodriguez@unimagdalena.edu.co' AND o2.total = 270000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'PAID', 400000.00, NOW()-INTERVAL '9 days', NOW()-INTERVAL '8 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'ana.martinez@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'ana.martinez@unimagdalena.edu.co' AND o2.total = 400000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'PAID', 405000.00, NOW()-INTERVAL '7 days', NOW()-INTERVAL '6 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'pedro.hernandez@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'pedro.hernandez@unimagdalena.edu.co' AND o2.total = 405000.00);
+
+-- ── SHIPPED (última semana) ──────────────────
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'SHIPPED', 480000.00, NOW()-INTERVAL '6 days', NOW()-INTERVAL '5 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'maria.lopez@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'maria.lopez@unimagdalena.edu.co' AND o2.total = 480000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'SHIPPED', 225000.00, NOW()-INTERVAL '5 days', NOW()-INTERVAL '4 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'laura.sanchez@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'laura.sanchez@unimagdalena.edu.co' AND o2.total = 225000.00);
+
+INSERT INTO orders (customer_id, address_id, status, total, created_at, updated_at)
+  SELECT c.id, a.id, 'SHIPPED', 220000.00, NOW()-INTERVAL '4 days', NOW()-INTERVAL '3 days'
+  FROM customers c JOIN addresses a ON a.customer_id = c.id
+  WHERE c.email = 'diego.torres@unimagdalena.edu.co'
+    AND NOT EXISTS (SELECT 1 FROM orders o2 JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'diego.torres@unimagdalena.edu.co' AND o2.total = 220000.00);
+
+-- =============================================
+-- ITEMS DE LAS ÓRDENES EXTRA
+-- =============================================
+
+-- juan.garcia 270000 DELIVERED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 180000.00, 180000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ELEC-003' WHERE c.email = 'juan.garcia@unimagdalena.edu.co' AND o.total = 270000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'juan.garcia@unimagdalena.edu.co' AND o2.total = 270000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 2,  45000.00,  90000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ELEC-002' WHERE c.email = 'juan.garcia@unimagdalena.edu.co' AND o.total = 270000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'juan.garcia@unimagdalena.edu.co' AND o2.total = 270000.00 AND p2.sku = 'ELEC-002');
+
+-- maria.lopez 222000 DELIVERED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  72000.00,  72000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'LIB-001' WHERE c.email = 'maria.lopez@unimagdalena.edu.co' AND o.total = 222000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'maria.lopez@unimagdalena.edu.co' AND o2.total = 222000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  85000.00,  85000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'LIB-002' WHERE c.email = 'maria.lopez@unimagdalena.edu.co' AND o.total = 222000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'maria.lopez@unimagdalena.edu.co' AND o2.total = 222000.00 AND p2.sku = 'LIB-002');
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  65000.00,  65000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'LIB-003' WHERE c.email = 'maria.lopez@unimagdalena.edu.co' AND o.total = 222000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'maria.lopez@unimagdalena.edu.co' AND o2.total = 222000.00 AND p2.sku = 'LIB-003');
+
+-- carlos.rodriguez 163000 DELIVERED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  95000.00,  95000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ING-002' WHERE c.email = 'carlos.rodriguez@unimagdalena.edu.co' AND o.total = 163000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'carlos.rodriguez@unimagdalena.edu.co' AND o2.total = 163000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  68000.00,  68000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ING-003' WHERE c.email = 'carlos.rodriguez@unimagdalena.edu.co' AND o.total = 163000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'carlos.rodriguez@unimagdalena.edu.co' AND o2.total = 163000.00 AND p2.sku = 'ING-003');
+
+-- ana.martinez 330000 DELIVERED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 145000.00, 145000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'MED-001' WHERE c.email = 'ana.martinez@unimagdalena.edu.co' AND o.total = 330000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'ana.martinez@unimagdalena.edu.co' AND o2.total = 330000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 185000.00, 185000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'MED-002' WHERE c.email = 'ana.martinez@unimagdalena.edu.co' AND o.total = 330000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'ana.martinez@unimagdalena.edu.co' AND o2.total = 330000.00 AND p2.sku = 'MED-002');
+
+-- pedro.hernandez 433000 DELIVERED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 385000.00, 385000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'FOT-001' WHERE c.email = 'pedro.hernandez@unimagdalena.edu.co' AND o.total = 433000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'pedro.hernandez@unimagdalena.edu.co' AND o2.total = 433000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  48000.00,  48000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'FOT-003' WHERE c.email = 'pedro.hernandez@unimagdalena.edu.co' AND o.total = 433000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'pedro.hernandez@unimagdalena.edu.co' AND o2.total = 433000.00 AND p2.sku = 'FOT-003');
+
+-- laura.sanchez 210000 DELIVERED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 125000.00, 125000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'GAM-002' WHERE c.email = 'laura.sanchez@unimagdalena.edu.co' AND o.total = 210000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'laura.sanchez@unimagdalena.edu.co' AND o2.total = 210000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  85000.00,  85000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'GAM-003' WHERE c.email = 'laura.sanchez@unimagdalena.edu.co' AND o.total = 210000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'laura.sanchez@unimagdalena.edu.co' AND o2.total = 210000.00 AND p2.sku = 'GAM-003');
+
+-- diego.torres 275000 DELIVERED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 125000.00, 125000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ECO-001' WHERE c.email = 'diego.torres@unimagdalena.edu.co' AND o.total = 275000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'diego.torres@unimagdalena.edu.co' AND o2.total = 275000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  78000.00,  78000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ECO-002' WHERE c.email = 'diego.torres@unimagdalena.edu.co' AND o.total = 275000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'diego.torres@unimagdalena.edu.co' AND o2.total = 275000.00 AND p2.sku = 'ECO-002');
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  72000.00,  72000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ECO-003' WHERE c.email = 'diego.torres@unimagdalena.edu.co' AND o.total = 275000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'diego.torres@unimagdalena.edu.co' AND o2.total = 275000.00 AND p2.sku = 'ECO-003');
+
+-- sofia.ramirez 250000 DELIVERED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 125000.00, 125000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ACC-001' WHERE c.email = 'sofia.ramirez@unimagdalena.edu.co' AND o.total = 250000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'sofia.ramirez@unimagdalena.edu.co' AND o2.total = 250000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 125000.00, 125000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'GAM-002' WHERE c.email = 'sofia.ramirez@unimagdalena.edu.co' AND o.total = 250000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'sofia.ramirez@unimagdalena.edu.co' AND o2.total = 250000.00 AND p2.sku = 'GAM-002');
+
+-- andres.morales 165000 DELIVERED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  45000.00,  45000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ROP-001' WHERE c.email = 'andres.morales@unimagdalena.edu.co' AND o.total = 165000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'andres.morales@unimagdalena.edu.co' AND o2.total = 165000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  85000.00,  85000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ROP-002' WHERE c.email = 'andres.morales@unimagdalena.edu.co' AND o.total = 165000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'andres.morales@unimagdalena.edu.co' AND o2.total = 165000.00 AND p2.sku = 'ROP-002');
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  35000.00,  35000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ROP-003' WHERE c.email = 'andres.morales@unimagdalena.edu.co' AND o.total = 165000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'andres.morales@unimagdalena.edu.co' AND o2.total = 165000.00 AND p2.sku = 'ROP-003');
+
+-- valentina.cruz 258000 DELIVERED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 125000.00, 125000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ACC-001' WHERE c.email = 'valentina.cruz@unimagdalena.edu.co' AND o.total = 258000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'valentina.cruz@unimagdalena.edu.co' AND o2.total = 258000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  38000.00,  38000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ACC-002' WHERE c.email = 'valentina.cruz@unimagdalena.edu.co' AND o.total = 258000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'valentina.cruz@unimagdalena.edu.co' AND o2.total = 258000.00 AND p2.sku = 'ACC-002');
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  95000.00,  95000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ACC-003' WHERE c.email = 'valentina.cruz@unimagdalena.edu.co' AND o.total = 258000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'valentina.cruz@unimagdalena.edu.co' AND o2.total = 258000.00 AND p2.sku = 'ACC-003');
+
+-- miguel.vargas 360000 DELIVERED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 185000.00, 185000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'INFO-002' WHERE c.email = 'miguel.vargas@unimagdalena.edu.co' AND o.total = 360000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'miguel.vargas@unimagdalena.edu.co' AND o2.total = 360000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 175000.00, 175000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ELEC-003' WHERE c.email = 'miguel.vargas@unimagdalena.edu.co' AND o.total = 360000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'miguel.vargas@unimagdalena.edu.co' AND o2.total = 360000.00 AND p2.sku = 'ELEC-003');
+
+-- isabella.diaz 174000 DELIVERED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  72000.00,  72000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'LIB-001' WHERE c.email = 'isabella.diaz@unimagdalena.edu.co' AND o.total = 174000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'isabella.diaz@unimagdalena.edu.co' AND o2.total = 174000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  68000.00,  68000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'LIB-004' WHERE c.email = 'isabella.diaz@unimagdalena.edu.co' AND o.total = 174000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'isabella.diaz@unimagdalena.edu.co' AND o2.total = 174000.00 AND p2.sku = 'LIB-004');
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 4,   8500.00,  34000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'PAP-001' WHERE c.email = 'isabella.diaz@unimagdalena.edu.co' AND o.total = 174000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'isabella.diaz@unimagdalena.edu.co' AND o2.total = 174000.00 AND p2.sku = 'PAP-001');
+
+-- felipe.castro 135000 DELIVERED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  65000.00,  65000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'DEP-001' WHERE c.email = 'felipe.castro@unimagdalena.edu.co' AND o.total = 135000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'felipe.castro@unimagdalena.edu.co' AND o2.total = 135000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  42000.00,  42000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'DEP-002' WHERE c.email = 'felipe.castro@unimagdalena.edu.co' AND o.total = 135000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'felipe.castro@unimagdalena.edu.co' AND o2.total = 135000.00 AND p2.sku = 'DEP-002');
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  28000.00,  28000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'DEP-003' WHERE c.email = 'felipe.castro@unimagdalena.edu.co' AND o.total = 135000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'felipe.castro@unimagdalena.edu.co' AND o2.total = 135000.00 AND p2.sku = 'DEP-003');
+
+-- camila.jimenez 111000 DELIVERED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  28000.00,  28000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ART-001' WHERE c.email = 'camila.jimenez@unimagdalena.edu.co' AND o.total = 111000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'camila.jimenez@unimagdalena.edu.co' AND o2.total = 111000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  48000.00,  48000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ART-003' WHERE c.email = 'camila.jimenez@unimagdalena.edu.co' AND o.total = 111000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'camila.jimenez@unimagdalena.edu.co' AND o2.total = 111000.00 AND p2.sku = 'ART-003');
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  35000.00,  35000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ART-004' WHERE c.email = 'camila.jimenez@unimagdalena.edu.co' AND o.total = 111000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'camila.jimenez@unimagdalena.edu.co' AND o2.total = 111000.00 AND p2.sku = 'ART-004');
+
+-- santiago.reyes 108000 DELIVERED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  42000.00,  42000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'IDI-001' WHERE c.email = 'santiago.reyes@unimagdalena.edu.co' AND o.total = 108000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'santiago.reyes@unimagdalena.edu.co' AND o2.total = 108000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  38000.00,  38000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'IDI-002' WHERE c.email = 'santiago.reyes@unimagdalena.edu.co' AND o.total = 108000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'santiago.reyes@unimagdalena.edu.co' AND o2.total = 108000.00 AND p2.sku = 'IDI-002');
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  28000.00,  28000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'IDI-003' WHERE c.email = 'santiago.reyes@unimagdalena.edu.co' AND o.total = 108000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'santiago.reyes@unimagdalena.edu.co' AND o2.total = 108000.00 AND p2.sku = 'IDI-003');
+
+-- juan.garcia 650000 PAID
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 650000.00, 650000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ELEC-004' WHERE c.email = 'juan.garcia@unimagdalena.edu.co' AND o.total = 650000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'juan.garcia@unimagdalena.edu.co' AND o2.total = 650000.00);
+
+-- carlos.rodriguez 270000 PAID
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 145000.00, 145000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'GAM-004' WHERE c.email = 'carlos.rodriguez@unimagdalena.edu.co' AND o.total = 270000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'carlos.rodriguez@unimagdalena.edu.co' AND o2.total = 270000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 125000.00, 125000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'GAM-002' WHERE c.email = 'carlos.rodriguez@unimagdalena.edu.co' AND o.total = 270000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'carlos.rodriguez@unimagdalena.edu.co' AND o2.total = 270000.00 AND p2.sku = 'GAM-002');
+
+-- ana.martinez 400000 PAID
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 220000.00, 220000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'INFO-001' WHERE c.email = 'ana.martinez@unimagdalena.edu.co' AND o.total = 400000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'ana.martinez@unimagdalena.edu.co' AND o2.total = 400000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 180000.00, 180000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ELEC-003' WHERE c.email = 'ana.martinez@unimagdalena.edu.co' AND o.total = 400000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'ana.martinez@unimagdalena.edu.co' AND o2.total = 400000.00 AND p2.sku = 'ELEC-003');
+
+-- pedro.hernandez 405000 PAID
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 220000.00, 220000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'INFO-001' WHERE c.email = 'pedro.hernandez@unimagdalena.edu.co' AND o.total = 405000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'pedro.hernandez@unimagdalena.edu.co' AND o2.total = 405000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 185000.00, 185000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'INFO-002' WHERE c.email = 'pedro.hernandez@unimagdalena.edu.co' AND o.total = 405000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'pedro.hernandez@unimagdalena.edu.co' AND o2.total = 405000.00 AND p2.sku = 'INFO-002');
+
+-- maria.lopez 480000 SHIPPED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 385000.00, 385000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'FOT-001' WHERE c.email = 'maria.lopez@unimagdalena.edu.co' AND o.total = 480000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'maria.lopez@unimagdalena.edu.co' AND o2.total = 480000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  95000.00,  95000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'FOT-002' WHERE c.email = 'maria.lopez@unimagdalena.edu.co' AND o.total = 480000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'maria.lopez@unimagdalena.edu.co' AND o2.total = 480000.00 AND p2.sku = 'FOT-002');
+
+-- laura.sanchez 225000 SHIPPED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 180000.00, 180000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ELEC-003' WHERE c.email = 'laura.sanchez@unimagdalena.edu.co' AND o.total = 225000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'laura.sanchez@unimagdalena.edu.co' AND o2.total = 225000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  45000.00,  45000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ELEC-002' WHERE c.email = 'laura.sanchez@unimagdalena.edu.co' AND o.total = 225000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'laura.sanchez@unimagdalena.edu.co' AND o2.total = 225000.00 AND p2.sku = 'ELEC-002');
+
+-- diego.torres 220000 SHIPPED
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1, 125000.00, 125000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ACC-001' WHERE c.email = 'diego.torres@unimagdalena.edu.co' AND o.total = 220000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id WHERE c2.email = 'diego.torres@unimagdalena.edu.co' AND o2.total = 220000.00);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) SELECT o.id, p.id, 1,  95000.00,  95000.00 FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.sku = 'ING-002' WHERE c.email = 'diego.torres@unimagdalena.edu.co' AND o.total = 220000.00 AND NOT EXISTS (SELECT 1 FROM order_items oi2 JOIN orders o2 ON o2.id = oi2.order_id JOIN customers c2 ON c2.id = o2.customer_id JOIN products p2 ON p2.id = oi2.product_id WHERE c2.email = 'diego.torres@unimagdalena.edu.co' AND o2.total = 220000.00 AND p2.sku = 'ING-002');
+
+-- =============================================
+-- HISTORIAL EXTRA para las órdenes nuevas
+-- =============================================
+INSERT INTO order_status_history (order_id, from_status, to_status, changed_at, note) SELECT o.id, NULL, 'CREATED', o.created_at, 'Orden creada' FROM orders o JOIN customers c ON c.id = o.customer_id WHERE o.status = 'DELIVERED' AND o.total IN (270000.00,222000.00,163000.00,330000.00,433000.00,210000.00,275000.00,250000.00,165000.00,258000.00,360000.00,174000.00,135000.00,111000.00,108000.00) AND NOT EXISTS (SELECT 1 FROM order_status_history h WHERE h.order_id = o.id AND h.to_status = 'CREATED');
+INSERT INTO order_status_history (order_id, from_status, to_status, changed_at, note) SELECT o.id, 'CREATED', 'PAID', o.created_at + INTERVAL '1 day', 'Pago confirmado' FROM orders o WHERE o.status = 'DELIVERED' AND o.total IN (270000.00,222000.00,163000.00,330000.00,433000.00,210000.00,275000.00,250000.00,165000.00,258000.00,360000.00,174000.00,135000.00,111000.00,108000.00) AND NOT EXISTS (SELECT 1 FROM order_status_history h WHERE h.order_id = o.id AND h.to_status = 'PAID');
+INSERT INTO order_status_history (order_id, from_status, to_status, changed_at, note) SELECT o.id, 'PAID', 'SHIPPED', o.created_at + INTERVAL '2 days', 'Orden enviada' FROM orders o WHERE o.status = 'DELIVERED' AND o.total IN (270000.00,222000.00,163000.00,330000.00,433000.00,210000.00,275000.00,250000.00,165000.00,258000.00,360000.00,174000.00,135000.00,111000.00,108000.00) AND NOT EXISTS (SELECT 1 FROM order_status_history h WHERE h.order_id = o.id AND h.to_status = 'SHIPPED');
+INSERT INTO order_status_history (order_id, from_status, to_status, changed_at, note) SELECT o.id, 'SHIPPED', 'DELIVERED', o.created_at + INTERVAL '5 days', 'Orden entregada al destinatario' FROM orders o WHERE o.status = 'DELIVERED' AND o.total IN (270000.00,222000.00,163000.00,330000.00,433000.00,210000.00,275000.00,250000.00,165000.00,258000.00,360000.00,174000.00,135000.00,111000.00,108000.00) AND NOT EXISTS (SELECT 1 FROM order_status_history h WHERE h.order_id = o.id AND h.to_status = 'DELIVERED');
+INSERT INTO order_status_history (order_id, from_status, to_status, changed_at, note) SELECT o.id, NULL, 'CREATED', o.created_at, 'Orden creada' FROM orders o WHERE o.status = 'PAID' AND o.total IN (650000.00,270000.00,400000.00,405000.00) AND NOT EXISTS (SELECT 1 FROM order_status_history h WHERE h.order_id = o.id AND h.to_status = 'CREATED');
+INSERT INTO order_status_history (order_id, from_status, to_status, changed_at, note) SELECT o.id, 'CREATED', 'PAID', o.created_at + INTERVAL '1 day', 'Pago confirmado' FROM orders o WHERE o.status = 'PAID' AND o.total IN (650000.00,270000.00,400000.00,405000.00) AND NOT EXISTS (SELECT 1 FROM order_status_history h WHERE h.order_id = o.id AND h.to_status = 'PAID');
+INSERT INTO order_status_history (order_id, from_status, to_status, changed_at, note) SELECT o.id, NULL, 'CREATED', o.created_at, 'Orden creada' FROM orders o WHERE o.status = 'SHIPPED' AND o.total IN (480000.00,225000.00,220000.00) AND NOT EXISTS (SELECT 1 FROM order_status_history h WHERE h.order_id = o.id AND h.to_status = 'CREATED');
+INSERT INTO order_status_history (order_id, from_status, to_status, changed_at, note) SELECT o.id, 'CREATED', 'PAID', o.created_at + INTERVAL '1 day', 'Pago confirmado' FROM orders o WHERE o.status = 'SHIPPED' AND o.total IN (480000.00,225000.00,220000.00) AND NOT EXISTS (SELECT 1 FROM order_status_history h WHERE h.order_id = o.id AND h.to_status = 'PAID');
+INSERT INTO order_status_history (order_id, from_status, to_status, changed_at, note) SELECT o.id, 'PAID', 'SHIPPED', o.created_at + INTERVAL '2 days', 'Orden enviada' FROM orders o WHERE o.status = 'SHIPPED' AND o.total IN (480000.00,225000.00,220000.00) AND NOT EXISTS (SELECT 1 FROM order_status_history h WHERE h.order_id = o.id AND h.to_status = 'SHIPPED');
