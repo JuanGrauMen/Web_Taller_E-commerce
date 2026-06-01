@@ -26,7 +26,10 @@ const unpage = (resp) => Array.isArray(resp) ? resp : (resp?.content ?? [])
 
 // ---------- PRODUCTOS ----------
 export const productApi = {
-  findAll:         (categoryId) => request(`/products${categoryId ? `?categoryId=${categoryId}` : ''}`).then(unpage),
+  findAll:         (categoryId, page = 0, size = 15) => {
+    const params = new URLSearchParams(Object.entries({ page, size, ...(categoryId ? { categoryId } : {}) }).map(([k, v]) => [k, String(v)]))
+    return request(`/products?${params}`)
+  },
   get:             (id)         => request(`/products/${id}`),
   create:          (data)       => request('/products', { method: 'POST', body: JSON.stringify(data) }),
   update:          (id, data)   => request(`/products/${id}`, { method: 'PUT', body: JSON.stringify(data) }),

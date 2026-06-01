@@ -14,13 +14,17 @@ const s = {
   td:      { padding: '10px 12px', borderBottom: '1px solid #f1f5f9', color: '#334155', verticalAlign: 'middle' },
   badge:   { padding: '2px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: '600' },
   error:   { color: '#ef4444', marginTop: '8px', fontSize: '13px' },
-  count:   { fontSize: '13px', color: '#64748b' }
+  pagination: { display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', marginTop: '16px' },
+  pageBtn: { padding: '6px 14px', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer', fontSize: '13px', fontWeight: '600', backgroundColor: '#fff', color: '#475569' }
 }
 
 const emptyForm = { categoryId: '', name: '', sku: '', price: '', description: '', availableStock: '0', minimumStock: '0' }
+const PAGE_SIZE = 15
 
 export default function ProductsPage() {
   const [products, setProducts]     = useState([])
+  const [totalPages, setTotalPages] = useState(0)
+  const [page, setPage]             = useState(0)
   const [categories, setCategories] = useState([])
   const [form, setForm]             = useState(emptyForm)
   const [filterCat, setFilterCat]   = useState('')
@@ -29,17 +33,22 @@ export default function ProductsPage() {
   const [error, setError]           = useState('')
   const [loading, setLoading]       = useState(true)
 
-  const load = (catId = filterCat) => {
+  const load = (p = page, catId = filterCat) => {
     setLoading(true)
-    productApi.findAll(catId || undefined)
-      .then(setProducts)
+    productApi.findAll(catId || undefined, p, PAGE_SIZE)
+      .then(data => {
+        setProducts(data.content ?? [])
+        setTotalPages(data.totalPages ?? 0)
+      })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false))
   }
 
+  const goToPage = (p) => { setPage(p); load(p) }
+
   useEffect(() => {
     categoryApi.findAll().then(setCategories).catch(() => {})
-    load()
+    load(0)
   }, [])
 
   const handleSubmit = async (e) => {
@@ -56,7 +65,7 @@ export default function ProductsPage() {
         minimumStock:   Number(form.minimumStock)   || 0
       })
       setForm(emptyForm)
-      load()
+      load(page)
     } catch (e) { setError(e.message) }
   }
 
@@ -68,24 +77,20 @@ export default function ProductsPage() {
         price:  Number(editData.price),
         active: editData.active === 'true' || editData.active === true
       })
-      await productApi.updateInventory(id, {
-        availableStock: Number(editData.availableStock) || 0,
-        minimumStock:   Number(editData.minimumStock)   || 0
-      })
       setEditId(null)
-      load()
+      load(page)
     } catch (e) { setError(e.message) }
   }
 
   const startEdit = (p) => {
     setEditId(p.id)
-    setEditData({
-      name:           p.name,
-      price:          p.price,
-      active:         p.active,
-      availableStock: p.availableStock ?? 0,
-      minimumStock:   p.minimumStock   ?? 0
-    })
+    setEditData({ name: p.name, price: p.price, active: p.active })
+  }
+
+  const handleFilterChange = (catId) => {
+    setFilterCat(catId)
+    setPage(0)
+    load(0, catId)
   }
 
   return (
@@ -102,8 +107,8 @@ export default function ProductsPage() {
           <input style={s.input} placeholder="Nombre" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
           <input style={s.input} placeholder="SKU" value={form.sku} onChange={e => setForm({ ...form, sku: e.target.value })} required />
           <input style={s.input} placeholder="Precio" type="number" min="0.01" step="0.01" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required />
-          <input style={{ ...s.input, minWidth: '100px' }} placeholder="Stock inicial" type="number" min="0" value={form.availableStock} onChange={e => setForm({ ...form, availableStock: e.target.value })} />
-          <input style={{ ...s.input, minWidth: '100px' }} placeholder="Stock mínimo" type="number" min="0" value={form.minimumStock} onChange={e => setForm({ ...form, minimumStock: e.target.value })} />
+          <input style={{ ...s.input, minWidth: '110px' }} placeholder="Stock" type="number" min="0" value={form.availableStock} onChange={e => setForm({ ...form, availableStock: e.target.value })} />
+          <input style={{ ...s.input, minWidth: '110px' }} placeholder="Mínimo" type="number" min="0" value={form.minimumStock} onChange={e => setForm({ ...form, minimumStock: e.target.value })} />
           <input style={s.input} placeholder="Descripción (opcional)" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
           <button type="submit" style={{ ...s.btn, ...s.btnBlue }}>Crear</button>
         </form>
@@ -113,41 +118,33 @@ export default function ProductsPage() {
       <div style={s.card}>
         <div style={{ display: 'flex', gap: '10px', marginBottom: '14px', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <select style={s.input} value={filterCat} onChange={e => { setFilterCat(e.target.value); load(e.target.value) }}>
+            <select style={s.input} value={filterCat} onChange={e => handleFilterChange(e.target.value)}>
               <option value="">Todas las categorías</option>
               {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
-            <button style={{ ...s.btn, ...s.btnGray }} onClick={() => load()}>Actualizar</button>
+            <button style={{ ...s.btn, ...s.btnGray }} onClick={() => load(page)}>Actualizar</button>
           </div>
-          {!loading && (
-            <span style={s.count}>
-              {products.length} producto{products.length !== 1 ? 's' : ''}
-              {filterCat ? ' en esta categoría' : ' en total'}
-            </span>
-          )}
+          <span style={{ fontSize: '13px', color: '#64748b' }}>Página {page + 1} de {totalPages || 1}</span>
         </div>
 
         {loading ? <p>Cargando...</p> : (
-          <table style={s.table}>
-            <thead>
-              <tr>
-                <th style={s.th}>ID</th>
-                <th style={s.th}>Nombre</th>
-                <th style={s.th}>SKU</th>
-                <th style={s.th}>Categoría</th>
-                <th style={s.th}>Precio</th>
-                <th style={s.th}>Stock</th>
-                <th style={s.th}>Mínimo</th>
-                <th style={s.th}>Estado</th>
-                <th style={s.th}>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.length === 0 ? (
-                <tr><td colSpan={9} style={{ ...s.td, textAlign: 'center', color: '#94a3b8' }}>Sin productos</td></tr>
-              ) : products.map(p => {
-                const stockBajo = p.availableStock <= p.minimumStock
-                return (
+          <>
+            <table style={s.table}>
+              <thead>
+                <tr>
+                  <th style={s.th}>ID</th>
+                  <th style={s.th}>Nombre</th>
+                  <th style={s.th}>SKU</th>
+                  <th style={s.th}>Categoría</th>
+                  <th style={s.th}>Precio</th>
+                  <th style={s.th}>Estado</th>
+                  <th style={s.th}>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.length === 0 ? (
+                  <tr><td colSpan={7} style={{ ...s.td, textAlign: 'center', color: '#94a3b8' }}>Sin productos</td></tr>
+                ) : products.map(p => (
                   <tr key={p.id}>
                     <td style={s.td}>{p.id}</td>
                     <td style={s.td}>
@@ -161,26 +158,10 @@ export default function ProductsPage() {
                     <td style={s.td}>{p.categoryName}</td>
                     <td style={s.td}>
                       {editId === p.id
-                        ? <input style={{ ...s.input, padding: '4px 8px', width: '100px' }}
+                        ? <input style={{ ...s.input, padding: '4px 8px', width: '110px' }}
                             type="number" min="0.01" step="0.01" value={editData.price}
                             onChange={e => setEditData({ ...editData, price: e.target.value })} />
                         : `$${Number(p.price).toLocaleString()}`}
-                    </td>
-                    <td style={s.td}>
-                      {editId === p.id
-                        ? <input style={{ ...s.input, padding: '4px 8px', width: '70px' }}
-                            type="number" min="0" value={editData.availableStock}
-                            onChange={e => setEditData({ ...editData, availableStock: e.target.value })} />
-                        : <span style={{ fontWeight: '600', color: stockBajo ? '#dc2626' : '#166534' }}>
-                            {p.availableStock}
-                          </span>}
-                    </td>
-                    <td style={s.td}>
-                      {editId === p.id
-                        ? <input style={{ ...s.input, padding: '4px 8px', width: '70px' }}
-                            type="number" min="0" value={editData.minimumStock}
-                            onChange={e => setEditData({ ...editData, minimumStock: e.target.value })} />
-                        : p.minimumStock}
                     </td>
                     <td style={s.td}>
                       {editId === p.id
@@ -208,10 +189,24 @@ export default function ProductsPage() {
                       )}
                     </td>
                   </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+
+            {totalPages > 1 && (
+              <div style={s.pagination}>
+                <button style={{ ...s.pageBtn, ...(page === 0 ? { opacity: 0.4, cursor: 'not-allowed' } : {}) }}
+                  disabled={page === 0} onClick={() => goToPage(page - 1)}>← Anterior</button>
+                {Array.from({ length: totalPages }, (_, i) => i).map(i => (
+                  <button key={i}
+                    style={{ ...s.pageBtn, ...(i === page ? { backgroundColor: '#3b82f6', color: '#fff', borderColor: '#3b82f6' } : {}) }}
+                    onClick={() => goToPage(i)}>{i + 1}</button>
+                ))}
+                <button style={{ ...s.pageBtn, ...(page >= totalPages - 1 ? { opacity: 0.4, cursor: 'not-allowed' } : {}) }}
+                  disabled={page >= totalPages - 1} onClick={() => goToPage(page + 1)}>Siguiente →</button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
